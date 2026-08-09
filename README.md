@@ -15,8 +15,7 @@ speech-to-text, and Gemini-based memory extraction.
 - **Supabase** — Postgres, Auth, Storage
 - **Google Calendar API** — OAuth2, read-only
 - **Google Gemini** — extracts structured memory updates from lesson
-  transcripts and pasted notes
-- **OpenAI Whisper** — speech-to-text for lesson recordings
+  transcripts and pasted notes, and transcribes lesson recordings
 
 ## Mock mode — runs with zero setup
 
@@ -71,17 +70,14 @@ flow and scans the tutor's actual calendar for recurring events that look
 like tutoring sessions (subject keywords, "lesson"/"tutoring" in the title,
 a weekly cadence) instead of returning the sample roster.
 
-### Gemini (memory extraction) and Whisper (transcription)
+### Gemini (memory extraction + transcription)
 
-Set `GEMINI_API_KEY` and/or `OPENAI_API_KEY`. Each is independent:
-
-- With only `GEMINI_API_KEY` set, lesson recordings still transcribe to a
-  fixed sample transcript, but that transcript (and any pasted parent
-  message / note) is run through Gemini for real to produce the reviewable
-  suggestion list. Get a free key at
-  [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
-- With only `OPENAI_API_KEY` set, recordings are transcribed for real, but
-  the suggested updates shown for review are the fixed sample set.
+Set `GEMINI_API_KEY` — get a free key at
+[aistudio.google.com/apikey](https://aistudio.google.com/apikey). One key
+turns on both: lesson recordings are transcribed by Gemini instead of
+falling back to a fixed sample transcript, and that transcript (plus any
+pasted parent message / note) is run through Gemini to produce the
+reviewable suggestion list instead of the fixed sample set.
 
 ## How the pieces fit together
 

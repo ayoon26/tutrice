@@ -12,6 +12,6 @@ export const hasGoogleOAuth = Boolean(
 
 export const hasGemini = Boolean(process.env.GEMINI_API_KEY);
 
-export const hasTranscription = Boolean(process.env.OPENAI_API_KEY);
+export const hasTranscription = hasGemini;
 
 export const isMockMode = !hasSupabase;
