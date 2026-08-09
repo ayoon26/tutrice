@@ -10,8 +10,8 @@ export const hasGoogleOAuth = Boolean(
   process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
 );
 
-export const hasAnthropic = Boolean(process.env.ANTHROPIC_API_KEY);
+export const hasGemini = Boolean(process.env.GEMINI_API_KEY);
 
-export const hasTranscription = Boolean(process.env.OPENAI_API_KEY);
+export const hasTranscription = hasGemini;
 
 export const isMockMode = !hasSupabase;

@@ -1,3 +1,4 @@
+import { GoogleGenAI } from '@google/genai';
 import { hasTranscription } from '@/lib/config';
 
 export const MOCK_TRANSCRIPT =
@@ -11,25 +12,28 @@ export interface TranscriptionResult {
   mocked: boolean;
 }
 
-// Speech-to-text is provider-agnostic by design: swap this one function for
-// whichever ASR vendor you standardize on. Ships wired to OpenAI's
-// transcription endpoint since it needs no extra SDK dependency.
+// Speech-to-text via Gemini's audio input — shares GEMINI_API_KEY with the
+// memory-extraction integration, so a single free key covers both.
 export async function transcribeAudio(audio: Blob): Promise<TranscriptionResult> {
   if (!hasTranscription) {
     await new Promise((r) => setTimeout(r, 300));
     return { transcript: MOCK_TRANSCRIPT, mocked: true };
   }
 
-  const form = new FormData();
-  form.append('file', audio, 'lesson.webm');
-  form.append('model', 'whisper-1');
-
-  const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-    body: form,
+  const buffer = Buffer.from(await audio.arrayBuffer());
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const response = await ai.models.generateContent({
+    model: 'gemini-3.5-flash',
+    contents: [
+      {
+        role: 'user',
+        parts: [
+          { inlineData: { mimeType: audio.type || 'audio/webm', data: buffer.toString('base64') } },
+          { text: 'Transcribe this tutoring lesson recording exactly, word for word. Return only the transcript text, with no commentary or formatting.' },
+        ],
+      },
+    ],
   });
-  if (!res.ok) throw new Error(`Transcription failed: HTTP ${res.status}`);
-  const data = await res.json();
-  return { transcript: data.text as string, mocked: false };
+
+  return { transcript: response.text ?? '', mocked: false };
 }

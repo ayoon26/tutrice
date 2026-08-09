@@ -7,16 +7,15 @@ This is the production implementation of the `Tutrice.dc.html` design from
 the `../chats` / `../project` Claude Design handoff bundle: the same 21
 screens, sketchy-mascot brand, and copy, rebuilt as a real Next.js app on
 Supabase with working Google Calendar OAuth, browser audio recording,
-speech-to-text, and Claude-based memory extraction.
+speech-to-text, and Gemini-based memory extraction.
 
 ## Stack
 
 - **Next.js 16** (App Router, Turbopack, React 19)
 - **Supabase** — Postgres, Auth, Storage
 - **Google Calendar API** — OAuth2, read-only
-- **Anthropic Claude** — extracts structured memory updates from lesson
-  transcripts and pasted notes
-- **OpenAI Whisper** — speech-to-text for lesson recordings
+- **Google Gemini** — extracts structured memory updates from lesson
+  transcripts and pasted notes, and transcribes lesson recordings
 
 ## Mock mode — runs with zero setup
 
@@ -71,16 +70,14 @@ flow and scans the tutor's actual calendar for recurring events that look
 like tutoring sessions (subject keywords, "lesson"/"tutoring" in the title,
 a weekly cadence) instead of returning the sample roster.
 
-### Claude (memory extraction) and Whisper (transcription)
+### Gemini (memory extraction + transcription)
 
-Set `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY`. Each is independent:
-
-- With only `ANTHROPIC_API_KEY` set, lesson recordings still transcribe to a
-  fixed sample transcript, but that transcript (and any pasted parent
-  message / note) is run through Claude for real to produce the reviewable
-  suggestion list.
-- With only `OPENAI_API_KEY` set, recordings are transcribed for real, but
-  the suggested updates shown for review are the fixed sample set.
+Set `GEMINI_API_KEY` — get a free key at
+[aistudio.google.com/apikey](https://aistudio.google.com/apikey). One key
+turns on both: lesson recordings are transcribed by Gemini instead of
+falling back to a fixed sample transcript, and that transcript (plus any
+pasted parent message / note) is run through Gemini to produce the
+reviewable suggestion list instead of the fixed sample set.
 
 ## How the pieces fit together
 
@@ -88,7 +85,7 @@ Set `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY`. Each is independent:
   dispatches to `supabaseDb.ts` or the in-memory `memoryDb.ts` depending on
   whether Supabase is configured; every route/page calls the same `db.*`
   functions either way.
-- `src/lib/integrations/` — Google Calendar, transcription, and Claude
+- `src/lib/integrations/` — Google Calendar, transcription, and Gemini
   extraction, each with its own mock fallback.
 - `src/components/ui/` — the shared visual kit (buttons, cards, checklist
   rows, the header/step-progress bar, the mascot, the acorn-fall loading

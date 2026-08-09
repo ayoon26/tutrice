@@ -17,10 +17,17 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: 'Tutrice',
   description: 'Organized student memory for tutors — calendars, lessons, and notes, brought together.',
+  appleWebApp: {
+    title: 'Tutrice',
+    statusBarStyle: 'default',
+  },
+  icons: {
+    apple: '/icon-192.png',
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#ffffff',
+  themeColor: '#faf7ee',
   width: 'device-width',
   initialScale: 1,
 };
